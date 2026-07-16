@@ -83,7 +83,7 @@ export default function HomeScreen() {
           />
         </View>
 
-        {/* Destaques Section */}
+        {/* Destaque Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Destaques</Text>
           <ScrollView
