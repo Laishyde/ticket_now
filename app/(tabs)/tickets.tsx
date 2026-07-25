@@ -151,10 +151,11 @@ export default function TicketsScreen() {
         style={styles.scrollView}
       >
         {tickets.map((ticket) => (
-          <View key={ticket.id} style={{ width: SCREEN_WIDTH }}>
+          <View key={ticket.id} style={{ width: SCREEN_WIDTH, flex: 1 }}>
             <ScrollView
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.scrollContent}
+              style={{ flex: 1 }}
             >
               {/* QR Code Section */}
               <View style={styles.qrContainer}>
