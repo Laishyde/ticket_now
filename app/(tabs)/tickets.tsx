@@ -65,6 +65,18 @@ const tickets = [
     qr: "XUXA-CADEIRA-SUPERIOR",
     valorTipo: "INTEIRA",
   },
+  {
+    id: 5,
+    evento: "XUXA- O ÚLTIMO VOO DA NAVE",
+    data: "Sábado · 25/07/2026 · 19:00",
+    setor: "PIT A",
+    secao: "A",
+    entrada: "PORTÃO C1",
+    valor: "R$ 900,00",
+    total: "R$ 900,00",
+    qr: "XUXA-PIT-A",
+    valorTipo: "INTEIRA",
+  },
 ];
 
 export default function TicketsScreen() {
