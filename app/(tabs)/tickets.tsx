@@ -1,8 +1,9 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Dimensions,
   Image,
   SafeAreaView,
   ScrollView,
@@ -13,57 +14,55 @@ import {
   View,
 } from "react-native";
 
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
 const tickets = [
   {
     id: 1,
-    tab: "Ingresso 1",
-    evento: "LINIKER | BYE BYE CAJU",
-    data: "Sábado · 11/07/2026 · 19:00",
-    setor: "CADEIRA SUPERIOR",
-    secao: "SUPERIOR",
-    entrada: "PORTÃO B, D",
-    valor: "R$ 165,00",
-    total: "R$ 165,00",
-    qr: "LINIKER-CADEIRA-SUPERIOR",
-    valorTipo: "INTEIRA",
-  },
-  {
-    id: 2,
-    tab: "Ingresso 2",
-    evento: "LINIKER | BYE BYE CAJU",
-    data: "Sábado · 11/07/2026 · 19:00",
-    setor: "PISTA",
-    secao: "PISTA",
-    entrada: "PORTÃO A",
-    valor: "R$ 265,00",
-    total: "R$ 265,00",
-    qr: "LINIKER-PISTA",
-    valorTipo: "INTEIRA",
-  },
-  {
-    id: 3,
-    tab: "Ingresso 3",
-    evento: "LINIKER | BYE BYE CAJU",
-    data: "Sábado · 11/07/2026 · 19:00",
-    setor: "CADEIRA INFERIOR",
-    secao: "INFERIOR",
-    entrada: "PORTÃO A, C",
-    valor: "R$ 385,00",
-    total: "R$ 385,00",
-    qr: "LINIKER-CADEIRA-INFERIOR",
-    valorTipo: "INTEIRA",
-  },
-  {
-    id: 4,
-    tab: "Ingresso 4",
-    evento: "LINIKER | BYE BYE CAJU",
-    data: "Sábado · 11/07/2026 · 19:00",
+    evento: "XUXA- O ÚLTIMO VOO DA NAVE",
+    data: "Sábado · 25/07/2026 · 19:00",
     setor: "PISTA PREMIUM",
     secao: "PREMIUM",
     entrada: "PORTÃO B",
     valor: "R$ 595,00",
     total: "R$ 595,00",
-    qr: "LINIKER-PISTA-PREMIUM",
+    qr: "XUXA-PISTA-PREMIUM",
+    valorTipo: "INTEIRA",
+  },
+  {
+    id: 2,
+    evento: "XUXA- O ÚLTIMO VOO DA NAVE",
+    data: "Sábado · 25/07/2026 · 19:00",
+    setor: "PISTA",
+    secao: "PISTA",
+    entrada: "PORTÃO A",
+    valor: "R$ 295,00",
+    total: "R$ 295,00",
+    qr: "XUXA-PISTA",
+    valorTipo: "INTEIRA",
+  },
+  {
+    id: 3,
+    evento: "XUXA- O ÚLTIMO VOO DA NAVE",
+    data: "Sábado · 25/07/2026 · 19:00",
+    setor: "CADEIRA INFERIOR",
+    secao: "INFERIOR",
+    entrada: "PORTÃO A, C",
+    valor: "R$ 365,00",
+    total: "R$ 365,00",
+    qr: "XUXA-CADEIRA-INFERIOR",
+    valorTipo: "INTEIRA",
+  },
+  {
+    id: 4,
+    evento: "XUXA- O ÚLTIMO VOO DA NAVE",
+    data: "Sábado · 25/07/2026 · 19:00",
+    setor: "CADEIRA SUPERIOR",
+    secao: "SUPERIOR",
+    entrada: "PORTÃO B, D",
+    valor: "R$ 195,00",
+    total: "R$ 195,00",
+    qr: "XUXA-CADEIRA-SUPERIOR",
     valorTipo: "INTEIRA",
   },
 ];
@@ -75,6 +74,7 @@ export default function TicketsScreen() {
   const router = useRouter();
   const [currentTime, setCurrentTime] = useState("");
   const [gradientIndex, setGradientIndex] = useState(0);
+  const ticketScrollRef = useRef<ScrollView>(null);
 
   const gradientColors = [
     ["#FF6B6B", "#4ECDC4"],
@@ -130,156 +130,166 @@ export default function TicketsScreen() {
           <TouchableOpacity
             key={index}
             style={[styles.tab, selectedTicket === index && styles.activeTab]}
-            onPress={() => setSelectedTicket(index)}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                selectedTicket === index && styles.activeTabText,
-              ]}
-            >
-              {ticket.tab}
-            </Text>
-          </TouchableOpacity>
+            onPress={() => {
+              setSelectedTicket(index);
+              ticketScrollRef.current?.scrollTo({ x: index * SCREEN_WIDTH, animated: true });
+            }}
+          />
         ))}
       </View>
 
       <ScrollView
+        ref={ticketScrollRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={(event) => {
+          const index = Math.round(event.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+          setSelectedTicket(index);
+        }}
         style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
       >
-        {/* QR Code Section */}
-        <View style={styles.qrContainer}>
-          <View style={styles.qrGradientBackground}>
-            <LinearGradient
-              colors={gradientColors[gradientIndex] as [string, string]}
-              style={styles.gradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            />
-          </View>
-          <View style={styles.qrWhiteBox}>
-            <Image
-              source={{
-                uri: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${currentTicket.qr}`,
-              }}
-              style={styles.qrImage}
-            />
-          </View>
-          <View style={styles.clockContainer}>
-            <Text style={styles.clockText}>{currentTime}</Text>
-          </View>
-        </View>
+        {tickets.map((ticket) => (
+          <View key={ticket.id} style={{ width: SCREEN_WIDTH }}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.scrollContent}
+            >
+              {/* QR Code Section */}
+              <View style={styles.qrContainer}>
+                <View style={styles.qrGradientBackground}>
+                  <LinearGradient
+                    colors={gradientColors[gradientIndex] as [string, string]}
+                    style={styles.gradient}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                  />
+                </View>
+                <View style={styles.qrWhiteBox}>
+                  <Image
+                    source={{
+                      uri: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${ticket.qr}`,
+                    }}
+                    style={styles.qrImage}
+                  />
+                </View>
+                <View style={styles.clockContainer}>
+                  <Text style={styles.clockText}>{currentTime}</Text>
+                </View>
+              </View>
 
-        {/* Transfer Button */}
-        <TouchableOpacity style={styles.transferButton}>
-          <IconSymbol name="person.badge.plus.fill" size={18} color="#fff" />
-          <Text style={styles.transferButtonText}>TRANSFERIR</Text>
-        </TouchableOpacity>
-
-        {/* Event Details Card (MANTIDO EXATAMENTE AQUI APÓS O TRANSFERIR) */}
-        <View style={styles.infoCard}>
-          <Text style={styles.eventTitle}>{currentTicket.evento}</Text>
-          <Text style={styles.eventSubtitle}>{currentTicket.data}</Text>
-
-          <View style={styles.divider} />
-
-          <View style={styles.gridRow}>
-            <View style={styles.gridItem}>
-              <Text style={styles.label}>SETOR</Text>
-              <Text style={styles.value}>{currentTicket.setor}</Text>
-            </View>
-            <View style={styles.gridItem}>
-              <Text style={styles.label}>ENTRADA</Text>
-              <Text style={styles.value}>{currentTicket.entrada}</Text>
-            </View>
-          </View>
-
-          <View style={styles.gridRow}>
-            <View style={styles.gridItem}>
-              <Text style={styles.label}>SEÇÃO</Text>
-              <Text style={styles.value}>{currentTicket.secao}</Text>
-            </View>
-          </View>
-
-          {/* VALOR */}
-          <View style={styles.valorSection}>
-            <Text style={styles.valorLabel}>VALOR</Text>
-
-            <Text style={styles.valorTipo}>{currentTicket.valorTipo}</Text>
-
-            <Text style={styles.valorPreco}>{currentTicket.valor}</Text>
-          </View>
-        </View>
-
-        {/* --- ADICIONADO ABAIXO DAS INFORMAÇÕES DO SHOW --- */}
-
-        {/* Links de Ações Rápidas */}
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity style={styles.actionRow}>
-            <IconSymbol name="calendar" size={18} color="#0091FF" />
-            <Text style={styles.actionTextBlue}>Inserir na Agenda</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionRow}>
-            {/* ÍCONE DE COMPARTILHAR ATUALIZADO */}
-            <IconSymbol name="share" size={18} color="#0091FF" />
-            <Text style={styles.actionTextBlue}>Compartilhar</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Status de Transferência */}
-        <View style={styles.transferStatusContainer}></View>
-
-        {/* Formulário de Informações do Pedido */}
-        <View style={styles.orderInfoContainer}>
-          <Text style={styles.sectionTitle}>Informações do pedido</Text>
-
-          {/* Data do pedido */}
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>Data do pedido</Text>
-            <View style={styles.inputField}>
-              <Text style={styles.inputValue}>16/10/2025</Text>
-            </View>
-          </View>
-
-          {/* Número do pedido */}
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>Número do pedido</Text>
-            <View style={[styles.inputField, styles.inputFieldRow]}>
-              <Text style={styles.inputValue}>1738789703</Text>
-              <TouchableOpacity activeOpacity={0.7}>
-                {/* ÍCONE DE COPIAR/COLAR ATUALIZADO */}
-                <IconSymbol name="copy" size={16} color="#A3A3A3" />
+              {/* Transfer Button */}
+              <TouchableOpacity style={styles.transferButton}>
+                <IconSymbol name="person.badge.plus.fill" size={18} color="#fff" />
+                <Text style={styles.transferButtonText}>TRANSFERIR</Text>
               </TouchableOpacity>
-            </View>
-          </View>
 
-          {/* Quantidade de ingressos */}
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>Quantidade de ingressos</Text>
-            <View style={styles.inputField}>
-              <Text style={styles.inputValue}>1</Text>
-            </View>
-          </View>
+              {/* Event Details Card (MANTIDO EXATAMENTE AQUI APÓS O TRANSFERIR) */}
+              <View style={styles.infoCard}>
+                <Text style={styles.eventTitle}>{ticket.evento}</Text>
+                <Text style={styles.eventSubtitle}>{ticket.data}</Text>
 
-          {/* Total */}
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>Total</Text>
-            <View style={styles.inputField}>
-              <Text style={styles.inputValue}>{currentTicket.total}</Text>
-            </View>
-          </View>
+                <View style={styles.divider} />
 
-          {/* Status */}
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>Status</Text>
-            <View style={styles.inputField}>
-              <Text style={styles.inputValue}>Pago</Text>
-            </View>
+                <View style={styles.gridRow}>
+                  <View style={styles.gridItem}>
+                    <Text style={styles.label}>SETOR</Text>
+                    <Text style={styles.value}>{ticket.setor}</Text>
+                  </View>
+                  <View style={styles.gridItem}>
+                    <Text style={styles.label}>ENTRADA</Text>
+                    <Text style={styles.value}>{ticket.entrada}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.gridRow}>
+                  <View style={styles.gridItem}>
+                    <Text style={styles.label}>SEÇÃO</Text>
+                    <Text style={styles.value}>{ticket.secao}</Text>
+                  </View>
+                </View>
+
+                {/* VALOR */}
+                <View style={styles.valorSection}>
+                  <Text style={styles.valorLabel}>VALOR</Text>
+
+                  <Text style={styles.valorTipo}>{ticket.valorTipo}</Text>
+
+                  <Text style={styles.valorPreco}>{ticket.valor}</Text>
+                </View>
+              </View>
+
+              {/* --- ADICIONADO ABAIXO DAS INFORMAÇÕES DO SHOW --- */}
+
+              {/* Links de Ações Rápidas */}
+              <View style={styles.actionsContainer}>
+                <TouchableOpacity style={styles.actionRow}>
+                  <IconSymbol name="calendar" size={18} color="#0091FF" />
+                  <Text style={styles.actionTextBlue}>Inserir na Agenda</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.actionRow}>
+                  {/* ÍCONE DE COMPARTILHAR ATUALIZADO */}
+                  <IconSymbol name="share" size={18} color="#0091FF" />
+                  <Text style={styles.actionTextBlue}>Compartilhar</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Status de Transferência */}
+              <View style={styles.transferStatusContainer}></View>
+
+              {/* Formulário de Informações do Pedido */}
+              <View style={styles.orderInfoContainer}>
+                <Text style={styles.sectionTitle}>Informações do pedido</Text>
+
+                {/* Data do pedido */}
+                <View style={styles.formGroup}>
+                  <Text style={styles.inputLabel}>Data do pedido</Text>
+                  <View style={styles.inputField}>
+                    <Text style={styles.inputValue}>16/10/2025</Text>
+                  </View>
+                </View>
+
+                {/* Número do pedido */}
+                <View style={styles.formGroup}>
+                  <Text style={styles.inputLabel}>Número do pedido</Text>
+                  <View style={[styles.inputField, styles.inputFieldRow]}>
+                    <Text style={styles.inputValue}>1738789703</Text>
+                    <TouchableOpacity activeOpacity={0.7}>
+                      {/* ÍCONE DE COPIAR/COLAR ATUALIZADO */}
+                      <IconSymbol name="copy" size={16} color="#A3A3A3" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Quantidade de ingressos */}
+                <View style={styles.formGroup}>
+                  <Text style={styles.inputLabel}>Quantidade de ingressos</Text>
+                  <View style={styles.inputField}>
+                    <Text style={styles.inputValue}>1</Text>
+                  </View>
+                </View>
+
+                {/* Total */}
+                <View style={styles.formGroup}>
+                  <Text style={styles.inputLabel}>Total</Text>
+                  <View style={styles.inputField}>
+                    <Text style={styles.inputValue}>{ticket.total}</Text>
+                  </View>
+                </View>
+
+                {/* Status */}
+                <View style={styles.formGroup}>
+                  <Text style={styles.inputLabel}>Status</Text>
+                  <View style={styles.inputField}>
+                    <Text style={styles.inputValue}>Pago</Text>
+                  </View>
+                </View>
+              </View>
+            </ScrollView>
           </View>
-        </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -321,7 +331,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "transparent",
   },
   activeTab: {
-    borderBottomColor: "#EAB308",
+    borderBottomColor: "transparent",
   },
   tabText: {
     color: "#888",
