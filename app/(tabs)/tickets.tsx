@@ -20,7 +20,7 @@ const tickets = [
   {
     id: 1,
     evento: "XUXA- O ÚLTIMO VOO DA NAVE",
-    data: "Sábado · 25/07/2026 · 19:00",
+    data: "Sábado · 31/07/2026 · 20:00",
     setor: "PISTA PREMIUM",
     secao: "PREMIUM",
     entrada: "PORTÃO B",
@@ -32,7 +32,7 @@ const tickets = [
   {
     id: 2,
     evento: "XUXA- O ÚLTIMO VOO DA NAVE",
-    data: "Sábado · 25/07/2026 · 19:00",
+    data: "Sábado · 31/07/2026 · 20:00",
     setor: "PISTA",
     secao: "PISTA",
     entrada: "PORTÃO A",
@@ -44,7 +44,7 @@ const tickets = [
   {
     id: 3,
     evento: "XUXA- O ÚLTIMO VOO DA NAVE",
-    data: "Sábado · 25/07/2026 · 19:00",
+    data: "Sábado · 31/07/2026 · 20:00",
     setor: "CADEIRA INFERIOR",
     secao: "INFERIOR",
     entrada: "PORTÃO A, C",
@@ -56,7 +56,7 @@ const tickets = [
   {
     id: 4,
     evento: "XUXA- O ÚLTIMO VOO DA NAVE",
-    data: "Sábado · 25/07/2026 · 19:00",
+    data: "Sábado · 31/07/2026 · 20:00",
     setor: "CADEIRA SUPERIOR",
     secao: "SUPERIOR",
     entrada: "PORTÃO B, D",
@@ -68,7 +68,7 @@ const tickets = [
   {
     id: 5,
     evento: "XUXA- O ÚLTIMO VOO DA NAVE",
-    data: "Sábado · 25/07/2026 · 19:00",
+    data: "Sábado · 31/07/2026 · 20:00",
     setor: "PIT A",
     secao: "A",
     entrada: "PORTÃO C1",
